@@ -155,9 +155,6 @@ MONGO_URI=mongodb://localhost:27017/auth-service
 
 REDIS_URL=redis://localhost:6379
 
-JWT_ACCESS_SECRET=your_access_secret
-
-JWT_REFRESH_SECRET=your_refresh_secret
 ```
 
 ---
