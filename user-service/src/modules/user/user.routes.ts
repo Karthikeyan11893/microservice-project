@@ -4,10 +4,6 @@ import { UserController } from './user.controller';
 
 import { AuthMiddleware } from '../../core/middleware/auth.middleware';
 
-import { AuthorizationMiddleware } from '../rbac/authorize.middleware';
-
-import { ROLES } from '../../shared/constants';
-
 const router = Router();
 
 const controller = new UserController();
@@ -29,8 +25,6 @@ router.get(
   '/',
 
   AuthMiddleware.authenticate,
-
-  AuthorizationMiddleware.authorize(ROLES.ADMIN),
 
   controller.getUsers,
 );
