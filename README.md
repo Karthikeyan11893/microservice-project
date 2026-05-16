@@ -20,7 +20,7 @@ Production-ready Authentication & Authorization backend built with:
 - Refresh Token Rotation
 - Role Based Authorization (RBAC)
 - Redis Session Storage
-- Swagger API Docs
+- Swagger API Documentation
 - Global Error Handling
 - Rate Limiting
 - Docker Support
@@ -33,18 +33,18 @@ Production-ready Authentication & Authorization backend built with:
 
 # Tech Stack
 
-| Technology | Purpose |
-|---|---|
-| Node.js | Runtime |
-| Express.js | Backend Framework |
-| TypeScript | Type Safety |
-| MongoDB | Primary Database |
-| Mongoose | ODM |
-| Redis | Caching / Refresh Tokens |
-| JWT | Authentication |
-| Swagger | API Documentation |
-| Docker | Containerization |
-| Winston | Logging |
+| Technology | Purpose                  |
+| ---------- | ------------------------ |
+| Node.js    | Runtime                  |
+| Express.js | Backend Framework        |
+| TypeScript | Type Safety              |
+| MongoDB    | Primary Database         |
+| Mongoose   | ODM                      |
+| Redis      | Caching / Refresh Tokens |
+| JWT        | Authentication           |
+| Swagger    | API Documentation        |
+| Docker     | Containerization         |
+| Winston    | Logging                  |
 
 ---
 
@@ -83,21 +83,46 @@ src/
 # Architecture Overview
 
 ```txt
-Client
-   ↓
-Express Server
-   ↓
-Middleware Layer
-   ↓
-Routes
-   ↓
-Controllers
-   ↓
-Services
-   ↓
-Repositories
-   ↓
-MongoDB / Redis
+                    Client / Frontend
+                           │
+                           ▼
+                 ┌───────────────────┐
+                 │   Express Server  │
+                 │      app.ts       │
+                 └───────────────────┘
+                           │
+        ┌──────────────────┼──────────────────┐
+        │                  │                  │
+        ▼                  ▼                  ▼
+ ┌────────────┐    ┌──────────────┐   ┌──────────────┐
+ │ Middleware │    │ Swagger Docs │   │ Health Check │
+ └────────────┘    └──────────────┘   └──────────────┘
+        │
+        ▼
+ ┌────────────────────────────────────┐
+ │         Route Layer                │
+ │         /api/v1                    │
+ └────────────────────────────────────┘
+        │
+   ┌────┴────┐
+   ▼         ▼
+Auth Routes  User Routes
+   │             │
+   ▼             ▼
+Controllers    Controllers
+   │             │
+   ▼             ▼
+Services       Services
+   │             │
+   ▼             ▼
+Repositories   Repositories
+   │             │
+   └──────┬──────┘
+          ▼
+      MongoDB
+
+          ▼
+        Redis
 ```
 
 ---
@@ -124,6 +149,30 @@ Return Tokens
 
 ---
 
+# PNPM Setup
+
+## Enable Corepack
+
+```bash
+corepack enable
+```
+
+---
+
+## Install PNPM
+
+```bash
+corepack prepare pnpm@latest --activate
+```
+
+Verify installation:
+
+```bash
+pnpm -v
+```
+
+---
+
 # Installation
 
 ## Clone Repository
@@ -134,12 +183,37 @@ git clone <repository-url>
 
 ---
 
-## Install Dependencies
+## Navigate To Project
 
-Using pnpm:
+```bash
+cd auth-service
+```
+
+---
+
+## Install Dependencies
 
 ```bash
 pnpm install
+```
+
+---
+
+## Approve Native Package Builds
+
+Some packages require build script approval.
+
+Run:
+
+```bash
+pnpm approve-builds
+```
+
+Use:
+
+```txt
+SPACE → Select package
+ENTER → Confirm
 ```
 
 ---
@@ -167,21 +241,39 @@ REDIS_URL=redis://localhost:6379
 pnpm dev
 ```
 
+Expected logs:
+
+```txt
+MongoDB Connected
+Redis Connected
+Server running on port 9000
+Swagger UI: http://localhost:9000/docs
+API Base URL: http://localhost:9000/api/v1
+```
+
 ---
 
-## Production Build
+# Build Production Files
 
 ```bash
 pnpm build
 ```
 
+Compiles TypeScript into:
+
+```txt
+dist/
+```
+
 ---
 
-## Start Production
+# Start Production Server
 
 ```bash
 pnpm start
 ```
+
+Runs compiled production build.
 
 ---
 
@@ -207,33 +299,42 @@ http://localhost:9000/docs
 http://localhost:9000/health
 ```
 
+Expected response:
+
+```json
+{
+  "success": true,
+  "message": "Server is healthy"
+}
+```
+
 ---
 
 # API Endpoints
 
 ## Auth Routes
 
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/auth/signup` | Register user |
-| POST | `/auth/login` | Login user |
-| POST | `/auth/refresh` | Refresh access token |
-| POST | `/auth/logout` | Logout user |
+| Method | Endpoint        | Description          |
+| ------ | --------------- | -------------------- |
+| POST   | `/auth/signup`  | Register user        |
+| POST   | `/auth/login`   | Login user           |
+| POST   | `/auth/refresh` | Refresh access token |
+| POST   | `/auth/logout`  | Logout user          |
 
 ---
 
 ## User Routes
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/users` | Get all users |
-| GET | `/users/:id` | Get user by ID |
+| Method | Endpoint     | Description    |
+| ------ | ------------ | -------------- |
+| GET    | `/users`     | Get all users  |
+| GET    | `/users/:id` | Get user by ID |
 
 ---
 
 # Middleware
 
-## Implemented Middleware
+Implemented middleware:
 
 - CORS
 - Helmet
@@ -256,6 +357,31 @@ http://localhost:9000/health
 
 ---
 
+# Standard API Response
+
+## Success
+
+```json
+{
+  "success": true,
+  "message": "Success",
+  "data": {}
+}
+```
+
+---
+
+## Error
+
+```json
+{
+  "success": false,
+  "message": "Something went wrong"
+}
+```
+
+---
+
 # Docker
 
 ## Build Docker Image
@@ -274,7 +400,7 @@ docker run -p 9000:9000 auth-service
 
 ---
 
-# Docker Compose (Recommended)
+# Docker Compose
 
 ```yaml
 version: '3.9'
@@ -311,6 +437,12 @@ services:
 docker compose up
 ```
 
+Starts:
+
+- Auth Service
+- MongoDB
+- Redis
+
 ---
 
 # Logging
@@ -338,28 +470,13 @@ All errors return standardized responses.
 
 ---
 
-# Standard API Response
+# Current Architecture
 
-## Success
-
-```json
-{
-  "success": true,
-  "message": "Success",
-  "data": {}
-}
+```txt
+Modular Monolith
 ```
 
----
-
-## Error
-
-```json
-{
-  "success": false,
-  "message": "Something went wrong"
-}
-```
+The project is structured to easily evolve into microservices later.
 
 ---
 
@@ -370,18 +487,7 @@ All errors return standardized responses.
 - Kafka / RabbitMQ
 - Kubernetes
 - CI/CD Pipeline
-- Service Discovery
 - Distributed Tracing
 - Monitoring & Metrics
+- Service Discovery
 
----
-
-# Current Architecture Type
-
-```txt
-Modular Monolith
-```
-
-The system is structured to easily evolve into microservices later.
-
----
