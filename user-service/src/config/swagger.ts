@@ -10,7 +10,7 @@ export const swaggerSpec = swaggerJsDoc({
     },
     servers: [
       {
-        url: 'http://localhost:5000/api/v1',
+        url: 'http://localhost:9001/api/v1',
       },
     ],
   },
