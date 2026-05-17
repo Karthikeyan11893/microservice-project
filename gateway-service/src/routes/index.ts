@@ -17,9 +17,9 @@ router.use(
 
     changeOrigin: true,
 
-    pathRewrite: {
-      '^/auth': '/api/v1/auth',
-    },
+    // pathRewrite: {
+    //   '^/auth': '/api/v1/auth',
+    // },
   }),
 );
 
@@ -34,9 +34,9 @@ router.use(
 
     changeOrigin: true,
 
-    pathRewrite: {
-      '^/users': '/api/v1/users',
-    },
+    // pathRewrite: {
+    //   '^/users': '/api/v1/users',
+    // },
   }),
 );
 
