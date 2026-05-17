@@ -1,6 +1,11 @@
 import app from './app';
+
 import { env } from './config/env';
 
-app.listen(env.PORT, () => {
-  console.log(`API Gateway running on port ${env.PORT}`);
+const PORT = env.PORT;
+
+app.listen(PORT, () => {
+  console.log(`Gateway running on port ${PORT}`);
+
+  console.log(`Gateway URL: http://localhost:${PORT}`);
 });
