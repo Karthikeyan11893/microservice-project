@@ -1,43 +1,40 @@
 import { Router } from 'express';
 
-import { createProxyMiddleware } from 'http-proxy-middleware';
-
 import { env } from '../config/env';
 
 import { AuthMiddleware } from '../middlewares/auth.middleware';
 
+import { createServiceProxy } from '../utils/proxy';
+
 const router = Router();
 
-/** Auth Service Proxy */
+/**
+ * Debug Logs
+ */
+router.use((req, _, next) => {
+  console.log('GATEWAY REQUEST:', req.method, req.originalUrl);
+
+  next();
+});
+
+/**
+ * Auth Service
+ */
 router.use(
   '/auth',
 
-  createProxyMiddleware({
-    target: env.authService,
-
-    changeOrigin: true,
-
-    // pathRewrite: {
-    //   '^/auth': '/api/v1/auth',
-    // },
-  }),
+  createServiceProxy(env.authService, '/api/v1/auth'),
 );
 
-/** User Service Proxy */
+/**
+ * User Service
+ */
 router.use(
   '/users',
 
   AuthMiddleware.authenticate,
 
-  createProxyMiddleware({
-    target: env.userService,
-
-    changeOrigin: true,
-
-    // pathRewrite: {
-    //   '^/users': '/api/v1/users',
-    // },
-  }),
+  createServiceProxy(env.userService, '/api/v1/users'),
 );
 
 export default router;
