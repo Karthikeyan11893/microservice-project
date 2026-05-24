@@ -3,7 +3,7 @@ import { Database } from './shared/database';
 import { logger } from './config/logger';
 import { env } from './config/env';
 
-const PORT = env.PORT || 5000;
+const PORT = env.PORT;
 
 async function bootstrap() {
   try {
